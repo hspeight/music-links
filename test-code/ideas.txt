@@ -1,0 +1,5 @@
+tell user these were all in top n
+
+Detect locale and use appropriate chart for that country. Could also use an appropriate UK/US poly voice
+
+Streaks? Award for streaks?

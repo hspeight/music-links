@@ -1,0 +1,32 @@
+[
+    {
+            "title": "SILVER MACHINE",
+            "artist": "HAWKWIND",
+            "clipinfo": [
+                {
+                    "id": "HdTFeW8FCto",
+                    "start": "00:00:10",
+                    "duration": "00:00:20",
+                    "difficulty": "hard"
+                },
+                {
+                    "id": "2ndytid4sm_",
+                    "start": "00:00:10",
+                    "duration": "00:00:20",
+                    "difficulty": "easy"
+                }
+            ]
+    },
+    {
+        "title": "THRILLER",
+        "artist": "MICHAEL JACSON",
+        "clipinfo": [
+            {
+                "id": "trillermj_-",
+                "start": "00:00:10",
+                "duration": "00:00:20",
+                "difficulty": "medium"
+            }
+        ]
+}
+]

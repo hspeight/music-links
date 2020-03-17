@@ -1,0 +1,9 @@
+# Ignore all node_module directories
+**/node_modules/
+# Ignore all of these
+**/package-lock.json
+s3fs-fuse/
+# Don't track files in .history
+.history/
+# Exclude mp3 clips
+clips/

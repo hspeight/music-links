@@ -1,0 +1,164 @@
+// e.g.  nodejs scripts/matchFinder 100 charts INSTRUMENTS
+
+const path = require('path');
+const fs = require('fs');
+var glob = require('glob');
+const categories = require('../lambda/custom/categories');
+
+var matches = [];
+var keys = [];
+//const myRegex = /\bone\b|\btwo\b|\bthree\b|\bfour\b|\bfive\b|\bsix\b|\bseven\b|\beight\b|\bnine\b|\bten\b|\beleven\b/i;
+//const myRegex = /\"/i; // use a double quote to count all rows matched
+
+const regPosition = /[0-9]/; //regex to test against value in position column
+// Add these to regex:
+// sixteen, seventeen, nineteen, twenty, twenty one, twenty four, fifty, sixty four
+
+const args = process.argv.slice(2); // passed args start at element 2 of the process.argv array
+const top = args[0]; // e.g. 20 to interrogate only top twenty records
+const location = args[1]; // e.g. charts
+var cat = args[2]; // e.g. numbers, animals, etc
+//if (category === undefined) {
+//    category = '*';
+//} else {
+//    category = category.toLowerCase()
+//}
+//console.log(Object.keys(categories.categories));
+//console.log(categories.categories);
+var dirpath = path.join(__dirname, '../' + location);
+const directoryPath = dirpath + '/rollup/splits/*.csv'; // this should be one big file containing all songs to check
+
+for (var [category, value] of Object.entries(categories.categories)) {
+    //e.g. animals: buffalo,squirrel,otter,elephant,spider,
+    //console.log(`${category}: ${value.values}`);
+    //var vals = value.values;
+    //console.log(vals);
+
+var values = value.values;
+//console.log(values);
+var arr = values.split(',')
+
+let str = '';
+arr.forEach((element, i) => {
+    str += '\\b(' + element + ')\\b';
+    if (i + 1 < arr.length) str += '|';
+});
+
+glob(directoryPath, function (err, files) {
+    if (err) {
+        console.log(err);
+    }
+    files.forEach(function (file) {
+        try {
+            // read contents of the file
+            const data = fs.readFileSync(file, 'UTF-8');
+//console.log(file);
+            // split the contents by new line
+            const lines = data.split(/\r?\n/);
+
+            // process all lines
+            lines.forEach((line, i) => {
+                console.log(line);
+                if (line.length !== 0) { // last line appears to be empty
+                    let position = line.split(',')[3].replace(/['"]+/g, ''); //4th column is position
+                    if (position.match(regPosition) && parseInt(position) <= top) { //if it's a heading row there will be no digits
+                        for (i = 0; i < 2; i++) {
+                            arr.forEach(element => {
+                                //console.log(element);
+                                let regexMatched = checkEntry(line, element, i);
+                                //console.log(line);
+
+                                if (regexMatched) {
+                                    source = i == 0 ? 'title' : 'artist';
+                                    matches.push({
+                                        id: regexMatched,
+                                        entry: line.concat(',"' +
+                                                source + '","' +
+                                                regexMatched + '","' +
+                                                category + '","' +
+                                                //difficulty + '"'
+                                                '5"'
+                                        )
+                                    });
+                                    //console.log(regexMatched + '/' + line);
+                                }
+                            });
+
+                        }
+
+                    }
+                }
+            });
+        } catch (err) {
+            console.error(err);
+        }
+
+    });
+    //console.log(matches);
+    console.log('done ' + file);
+    write_data();
+
+});
+console.log('done');
+}
+//write_data();
+
+function checkEntry(line, element, i) {
+    // Lines are in this format:
+
+    let arr = line.split(',');
+    let title = arr[1];
+    let artist = arr[2];
+
+    const myRegex = new RegExp("\\b" + element + "\\b", 'i'); // match whole words only
+    //console.log(i + '-' + title + '-' + artist);
+    if ((i === 0 && title.match(myRegex)) || (i === 1 && artist.match(myRegex))) {
+            let matchedVal = '';
+            if (title.match(myRegex)) {
+                matchedVal = title.match(myRegex)[0];
+            } else {
+                if (artist.match(myRegex)) {
+                    matchedVal = artist.match(myRegex)[0];
+                }
+            }
+            return matchedVal;
+    } else {
+        return undefined;
+    }
+}
+
+async function write_data() {
+    // line below from https://flaviocopes.com/how-to-sort-array-of-objects-by-property-javascript/
+    matches.sort((a, b) => (a.id > b.id) ? 1 : -1); // sort the matches array
+
+    var dir = dirpath + '/matches/' + category.toLowerCase();
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir);
+    }
+    var logStream = '';
+
+    matches.forEach(element => {
+        key = element.id;
+        data = element.entry;
+        if (!keys.includes(key)) {
+            keys.push(key);
+            // create a new file with the key name and write all entries of that key into it
+            logStream = fs.createWriteStream(dir + '/' + key + '.match', {
+                flags: 'w'
+            });
+            writeIt(logStream, data);
+        } else {
+            writeIt(logStream, data);
+        }
+    });
+}
+
+async function writeIt(logStream, data) {
+
+    try {
+        await logStream.write(data + '\r\n');
+    }catch(error) {
+            console.error(error);
+    }
+
+}

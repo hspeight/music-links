@@ -1,0 +1,296 @@
+/*
+Read match files and generate the json to be used for the skill q & a
+*/
+// e.g. nodejs test-code/genClipData charts numbers
+const args = process.argv.slice(2); // passed args start at element 2 of the process.argv array
+const location = args[0]; // e.g. charts
+const category = args[1]; // e.g. numbers
+
+//const csv = require('csv-parser')
+var os = require("os");
+//const csvjson = require('csvjson');
+const csv = require('csvtojson')
+
+//const results = [];
+var fileArray = [];
+
+var fs = require('fs');
+var glob = require('glob');
+const path = require('path');
+
+const splitEasy = require("csv-split-easy");
+const readline = require('readline');
+
+const {
+    execSync
+} = require("child_process");
+
+var numFilesToRead = 0;
+
+const dirpath = path.join(__dirname, '../' + location);
+//const directoryPath = path.join(__dirname, '../charts/' + prefix + mask);
+const directoryPath = dirpath + '/matches/' + category + '/*.match';
+
+const jsonOutputFile = '/tmp/hs.json';
+const csvConcatFile = '/tmp/hs.csv';
+const csvConcatFile2 = '/tmp/hs2.csv';
+
+if (fs.existsSync(csvConcatFile)) {
+    try {
+        fs.unlinkSync(csvConcatFile)
+        //file removed
+    } catch (err) {
+        console.error(err)
+    }
+}
+
+glob(directoryPath, function (err, files) {
+    if (err) {
+        console.log(err);
+    }
+    numFilesToRead = files.length;
+    files.forEach(function (file, i) {
+        try {
+            //let sortedFile = makeCSVFile(file);
+            concatFile(file);
+        } catch (err) {
+            console.error(err);
+        }
+    });
+    //console.log('all done');
+    let data = readConcatFileByLine(csvConcatFile);
+    //console.log(data);
+});
+
+async function concatFile(file) {
+
+    //let matchVal = path.parse(file).name.split('.')[0]; //remove the extension
+    let data = fs.readFileSync(file, 'UTF-8');
+    //data += makeqanda(csvLine[0][i + 1], matchVal, i)
+
+    try {
+        fs.appendFileSync(csvConcatFile, data);
+        console.log(csvConcatFile + ' The "data to append" was appended to file!');
+    } catch (err) {
+        console.error('Append error');
+        /* Handle the error */
+    }
+
+
+
+    // Note: we use the crlfDelay option to recognize all instances of CR LF
+    // ('\r\n') in input.txt as a single line break.
+
+    //var dataString = '';
+
+    //for await (const line of rl) {
+    //console.log(line);
+    //console.log(path.parse(file));
+    //matchVal = path.parse(file).name.split('.')[0]; //remove the extension
+    //console.log('!!!!!!' + matchVal);
+    // Each line in input.txt will be successively available here as `line`.
+    //let csvLine = splitEasy(line);
+    //console.log(csvLine);
+    //console.log(JSON.stringify(csvLine, null, 4));
+    //let YTID = csvLine[0][0];
+    //let title = csvLine[0][1];
+    //let artist = csvLine[0][2];
+    //let titleArtist = title + ' ' + artist;
+    //let YTID = getYTID(titleArtist);
+    //let source = title.includes(matchVal) ? 'title' : artist.includes(matchVal) ? 'artist' : undefined;
+    //let qanda = '';
+    //for (i = 0; i < 2; i++) {
+    //    //let qanda = makeqanda(csvLine[0][i + 1], matchVal, i);
+    //    if (makeqanda(csvLine[0][i + 1], matchVal, i)) {
+    //        console.log(csvLine);
+    // the title or artist contains the matching value
+
+    //    }
+    // }
+    // work out whether the match was on title or artist
+    //let extrabit = artist === 'BLUE' ? '","diff cat' : '';
+    //let newLine = '"' + YTID + '","' + 
+    //    line.substring(6) + ',"' +   // get rid of the first bit of the date string from line
+    //category + '","' +
+    //source + '","' +
+    //   matchVal.toLowerCase() + '","' +
+    //let newLine = '"' + YTID + '","' +
+    //    title + '","' +
+    //    '#' + // difficulty! may have to be manually input
+    //    qanda +
+    //    '"' +
+    //    os.EOL;
+    //dataString += newLine;
+    //console.log(dataString);
+    //console.log('https://youtu.be/' + YTID);
+    //}
+
+    //console.log(dataString);
+
+    //let f = path.basename(file);
+    //let d = path.dirname(file);
+    //console.log('>' + d);
+    //console.log('>' + f);
+
+    //let myFile = d + '/_' + f; // stick an underscore at the front of the file name
+    //console.log(myFile);
+
+    //fs.writeFileSync(myFile, dataString);
+
+    //fileArray.push(file);
+    //console.log('==========');
+    //console.log(fileArray);
+    //console.log('==========');
+/*
+    if (numFilesToRead === fileArray.length) {
+        console.log(' i\'m done');
+        //makeJSON();
+        return process.exit();
+        makeJSON();
+    }
+
+    cmd = 'sed -i "1i clip.id,clip.title,clip.artist,clip.peakpos,clip.woc,' +
+        'clip.qandq.0.category,clip.qandq.0.source,clip.qandq.0.answer,clip.qandq.0.difficulty,' +
+        'clip.qandq.1.category,clip.qandq.1.source,clip.qandq.1.answer,clip.qandq.1.difficulty" ' + //only for 2nd cat
+        jsonOutputFile;
+    y = execSync(cmd).toString();
+
+    // Async / await usage
+    const jsonArray = await csv().fromFile(jsonOutputFile);
+    console.log(JSON.stringify(jsonArray));
+*/
+}
+
+async function readConcatFileByLine(file) {
+    
+    const fileStream = fs.createReadStream(file);
+
+    const rl = readline.createInterface({
+        input: fileStream,
+        crlfDelay: Infinity
+    });
+    // Note: we use the crlfDelay option to recognize all instances of CR LF
+    // ('\r\n') in input.txt as a single line break.
+    let matchVal = path.parse(file).name.split('.')[0]; //remove the extension from the file name
+    console.log('>' + matchVal);
+    var dataString = '';
+    //let i = 0;
+    //let seq = 0;
+    for await (const line of rl) {
+        let csvLine = splitEasy(line);
+        //console.log(csvLine);
+        //let YTID = csvLine[0][0];
+        let title = csvLine[0][1];
+        let artist = csvLine[0][2];
+        console.log(title + '+' + artist);
+        let source = title.includes(matchVal) ? 'title' : artist.includes(matchVal) ? 'artist' : undefined;
+        let answer = 'coventry';
+        let difficulty = 9;
+        dataString += line + ',"' +
+                    category + '","' +
+                    source + '","' + // attention
+                    answer + '","' + // attention
+                    difficulty + '"' +
+                    os.EOL;
+        
+        //fs.writeFileSync(jsonOutputFile, newline);
+        
+        //console.log(YTID + '^' + title + '^' + artist);
+        //console.log(dataString);
+    }
+
+    //console.log(dataString);
+
+    fs.writeFileSync(csvConcatFile2, dataString);
+
+    makeJSON();
+}
+
+/*
+function makeJSON() {
+
+    fileArray.forEach(element => {
+        cmd = 'sed -i "1i id,peakdate,title,artist,label,peakpos,woc" ' + element;
+        y = execSync(cmd).toString();
+    fs.readFile(element, 'utf-8', (err, fileContent) => {
+        if(err) {
+            console.log(err); // Do something to handle the error or just throw it
+            throw new Error(err);
+        }
+        const jsonObj = csvjson.toObject(fileContent);
+        console.log(jsonObj);
+    });
+});
+*/
+/*
+function makeJSON() {
+
+    fileArray.forEach(async element => {
+
+        cmd = 'sed -i "1i clip.id,clip.peakdate,clip.title,clip.artist,clip.label,clip.peakpos,clip.woc,' +
+                'clip.qandq.0.category,clip.qandq.0.source,clip.qandq.0.answer,clip.qandq.0.difficulty" ' + 
+            element;
+        y = execSync(cmd).toString();
+
+        //const csv = require('csvtojson')
+        //csv()
+        //    .fromFile(element)
+        //    .then((jsonObj) => {
+        //        console.log(jsonObj);
+        //    })
+
+        // Async / await usage
+        const jsonArray = await csv().fromFile(element);
+        console.log(JSON.stringify(jsonArray));
+
+    });
+
+
+}
+*/
+async function makeJSON() {
+
+    //let jsonOutputFile = dirpath + '/matches/' + category + '.json';
+    //let jsonOutputFile = '/tmp/hs.json';
+    //let csvOutputFile = path.join(__dirname, '../matches/' + category + '/' + category + '.csv');
+    /*
+    // ditch the json output file if it exists
+    if (fs.existsSync(jsonOutputFile)) {
+        try {
+            fs.unlinkSync(jsonOutputFile)
+            //file removed
+        } catch (err) {
+            console.error(err)
+        }
+    }
+    */
+    //console.log(fileArray);
+
+
+
+    cmd = 'sed -i "1i clip.id,clip.title,clip.artist,clip.peakpos,clip.woc,' +
+        'clip.qandq.0.category,clip.qandq.0.source,clip.qandq.0.answer,clip.qandq.0.difficulty" ' +
+        //'clip.qandq.1.category,clip.qandq.1.source,clip.qandq.1.answer,clip.qandq.1.difficulty" ' + //only for 2nd cat
+        csvConcatFile2;
+    y = execSync(cmd).toString();
+
+    // Async / await usage
+    const jsonArray = await csv().fromFile(csvConcatFile2);
+    console.log(JSON.stringify(jsonArray));
+}
+
+function makeqanda(val, matchVal, i) {
+
+    //console.log('make qanda ' + val);
+    if (val.includes(matchVal)) {
+        console.log(val + ' includes ' + matchVal);
+        return true;
+    } else {
+        return false;
+    }
+
+
+    //let extrabit = artist === matchVal ? '","diff cat' : '';
+
+
+}

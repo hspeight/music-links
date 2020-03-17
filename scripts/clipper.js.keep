@@ -1,0 +1,156 @@
+/* 
+Use youtube-dl to download a snippet of audio from a youtube vid starting at X for Y seconds
+Can be run for all gategories, a single category or a single ty url
+Usage:
+    nodejs test-code/clipper 00:00:40 00:00:20 all (all clips found in matches.json)
+    nodejs test-code/clipper --category numbers (all clips in category numbers. start defaults to 0 and duration defaults to 20)
+    nodejs test-code/clipper 00:00:40 00:00:20 --ytid 7lf_TreNPps --start 0 --duration 10
+*/
+const categories = require('../lambda/custom/categories');
+
+const fs = require('fs');
+const yargs = require('yargs');
+const argv = yargs
+.usage('Usage: $0 <command> [options]')
+  .help('h')
+  .alias('h', 'help')
+  //.command("count", "Count the lines in a file")
+  .alias('y', 'ytid')
+  .alias('s', 'start')
+  .alias('d', 'duration')
+.example("$0 ytid -y BdRgsmiN_0f","call youtube-dl to download the clip")
+.argv
+//if (argv.time) {
+//    console.log('The current time is: ', new Date().toLocaleTimeString());
+//}
+//console.log(argv.hasOwnProperty('star'));
+if (argv.hasOwnProperty('ytid')) {
+    const ytid = argv.ytid;
+        console.log(`ID is ${ytid}`);
+
+}
+return process.exit();
+
+const {
+    execSync
+} = require("child_process");
+
+var dirs = [];
+var carryOn = true;
+//const args = process.argv.slice(2); // passed args start at element 2 of the process.argv array
+//const startTime = args[0]; // e.g. 00:00:50
+//const length = args[1]; // e.g. 00:00:10
+//const URLID = args[2];
+//const url = 'https://youtu.be/'.concat(URLID); // e.g. DbbHXz1pDls
+//const grouping = args[3]; // e.g. numbers
+/*
+if (args[2].toLowerCase() == 'all') {
+    dirs = getListOfDirs('ALL');
+    console.log(dirs);
+} else {
+    //do all the requested categories exist?
+    dirs = getListOfDirs('SELECT');
+    console.log(dirs);
+}
+*/
+
+if (grouping === undefined) {
+    carryOn = false;
+    process.on('exit', function (code) {
+        console.log('Enter the category man!');
+    });
+}
+
+if (!carryOn)         return process.exit();
+
+const doubleQuote = '"';
+//var dirpath = path.join(__dirname, '../' + location);
+//const clipBase = './clips/';
+//const tempDir = clipBase + 'ALL_CLIPS/';
+
+const mp3Dir = '/mnt/s3bucket/';
+if (!fs.existsSync(mp3Dir)) {
+    console.log('Directory ' + mp3Dir + ' not found!');
+    return process.exit();
+}
+
+console.log(URLID);
+// download the clip once to temp
+//let cmd = 'youtube-dl --no-mtime -o "' + tempDir + '%(title)s-%(id)s.%(ext)s" --extract-audio --audio-format mp3 -x --postprocessor-args "-ss ' +
+let cmd = 'youtube-dl --no-mtime -o "' + mp3Dir + URLID + '.%(ext)s" --extract-audio --audio-format mp3 --audio-quality 48k -x --postprocessor-args "-ss ' +
+    //let cmd = 'youtube-dl --skip-download --no-mtime -o "' + dir + '/%(title)s-%(id)s.%(ext)s" --extract-audio --audio-format mp3 -x --postprocessor-args "-ss ' +
+    startTime + ' -t ' + length + '" ' + url;
+console.log(cmd);
+execSync(cmd, (error, stdout, stderr) => {
+    if (error) {
+        console.log(`error: ${error.message}`);
+        return;
+    }
+    if (stderr) {
+        console.log(`stderr: ${stderr}`);
+        return;
+    }
+    console.log(`stdout: ${stdout}`);
+});
+
+// copy the file from temp into the directory for each grouping specified
+//const dirs = grouping.split(',');
+dirs.forEach(element => {
+    // delete the file if it exists
+    /*
+    fs.stat('./server/upload/my.csv', function (err, stats) {
+        console.log(stats);//here we got all information of file in stats variable
+        if (err) {
+            return console.error(err);
+        }
+        fs.unlink('./server/upload/my.csv',function(err){
+             if(err) return console.log(err);
+             console.log('file deleted successfully');
+        });  
+     });
+     */
+    // make the directory if it doesn't exist
+    let clipDir = mp3Dir + element;
+    if (!fs.existsSync(clipDir)) {
+        console.log('making ' + clipDir);
+        fs.mkdirSync(clipDir);
+    }
+    filename = URLID + '.mp3';
+
+    //copy the file from the temp location
+    //console.log(tempDir + 'SILVER CONVENTION - get up and boogie (1976) (HQ)-hKGrfC1860o.mp3');
+    try {
+    fs.unlinkSync(clipDir + '/' + filename, (err) => {
+        if (err) {
+            console.log(clipDir + '/' + filename + ' NOT deleted')
+        } else {
+            console.log(clipDir + '/' + filename + ' deleted');
+        }
+    });
+} catch {
+    console.log('catch');
+}
+
+    fs.symlinkSync('./clips/ALL_CLIPS/' + filename, clipDir + '/' + filename); // requires attention
+});
+
+function getListOfDirs(scope) {
+
+    for (var [category] of Object.entries(categories.categories)) {
+        dirs.push(category);
+    }
+
+    if (scope === 'ALL') {
+        return dirs;
+    } else {
+
+    }
+
+    //let dirs = 'cat1,cat2,cata'.split(',');
+
+}
+
+//console.log(doubleQuote + url + '","YT TITLE","' + startTime + '","' + grouping + doubleQuote);
+
+// probbaly need to use ffmpeg to convert bitrate for alexa (unless it can be set by youtube-dl)
+

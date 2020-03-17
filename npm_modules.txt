@@ -1,0 +1,5 @@
+npm install --save ask-sdk-model
+npm install --save ask-sdk-core
+npm install aws-sdk
+npm i -save i18next i18next-sprintf-postprocessor
+npm install --save ask-sdk-dynamodb-persistence-adapter

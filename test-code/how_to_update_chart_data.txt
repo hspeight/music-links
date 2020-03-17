@@ -1,0 +1,12 @@
+cd ~/skills/First-Lines
+To produce 52 charts starting from 1st Jan 1960
+    node test-code/getCharts.js 1960-01-01 52 (leave number of charts blank for all)
+    Files are created in /var/lib/mysql-files/charts
+To update the mysql database with the chart data from above
+    ./test-code/updateChartDB.sh 1960-01-01 52 (leave number of charts blank for all)
+    update starts from the date entered
+To rerun a chart for all files with zero bytes
+    test-code/getChartsForZero.sh
+
+Notes:
+    mysql password for hector is in ~/.my.cnf

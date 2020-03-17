@@ -1,0 +1,117 @@
+[
+    {
+        "clips": [
+            {
+                "id": "miGJnsX-G4s",
+                "title": "ONE BY ONE",
+                "artist": "CHER",
+                "peak": 999,
+                "woc": 999,
+                "qanda": [
+                    {
+                        "category": "numbers",
+                        "source": "title",
+                        "answer": "one",
+                        "difficulty": 3
+                    }
+                ]
+            },
+            {
+                "id": "SlPhMPnQ58k",
+                "title": "MEMORIES",
+                "artist": "MAROON 5",
+                "peak": 5,
+                "woc": 18,
+                "qanda": [
+                    {
+                        "category": "numbers",
+                        "source": "artist",
+                        "answer": "five",
+                        "difficulty": 3
+                    },
+                    {
+                        "category": "colors",
+                        "source": "artist",
+                        "answer": "maroon",
+                        "difficulty": 3
+                    },
+                    {
+                        "category": "musicals",
+                        "source": "title",
+                        "answer": "cats",
+                        "difficulty": 3
+                    }
+                ]
+            },
+            {
+                "id": "Ra6j83Gsugk",
+                "title": "BLUE TANGO",
+                "artist": "RAY MARTIN",
+                "peak": 8,
+                "woc": 1,
+                "qanda": [
+                    {
+                        "category": "dances",
+                        "source": "title",
+                        "answer": "tango",
+                        "difficulty": 3
+                    },
+                    {
+                        "category": "colors",
+                        "source": "title",
+                        "answer": "blue",
+                        "difficulty": 3
+                    },
+                    {
+                        "category": "birds",
+                        "source": "artist",
+                        "answer": "martin",
+                        "difficulty": 3
+                    }
+                ]
+            },
+            {
+                "id": "???",
+                "title": "KILLER QUEEN",
+                "artist": "QUEEN",
+                "peak": 999,
+                "woc": 999,
+                "qanda": [
+                    {
+                        "category": "rulers",
+                        "source": "title",
+                        "answer": "queen",
+                        "difficulty": 3
+                    },
+                    {
+                        "category": "rulers",
+                        "source": "artist",
+                        "answer": "queen",
+                        "difficulty": 3
+                    }
+                ]
+            },
+            {
+                "id": "???",
+                "title": "LOVE PLUS ONE",
+                "artist": "HAIRCUT 100",
+                "peak": 999,
+                "woc": 999,
+                "qanda": [
+                    {
+                        "category": "numbers",
+                        "source": "title",
+                        "answer": "one",
+                        "difficulty": 3
+                    },
+                    {
+                        "category": "numbers",
+                        "source": "artist",
+                        "answer": "one hundred,a hundred,hundred",
+                        "difficulty": 3
+                    }
+                ]
+            }
+        ]
+    }
+]

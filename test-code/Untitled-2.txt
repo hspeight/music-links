@@ -1,0 +1,59 @@
+[
+    {
+        "clip": {
+            "id": "ZUxn6JLwdDY",
+            "peakdate": "20150813",
+            "title": "ANYONE WHO HAD A HEART",
+            "artist": "CILLA BLACK",
+            "label": "PARLOPHONE",
+            "peakpos": "41",
+            "woc": "3",
+            "qandq": [
+                {
+                    "category": "hstest2",
+                    "source": "artist",
+                    "answer": "black",
+                    "difficulty": "#undefinedundefined"
+                }
+            ]
+        }
+    },
+    {
+        "clip": {
+            "id": "85zUH9xOrhY",
+            "peakdate": "20080830",
+            "title": "LITTLE BLUE BOY",
+            "artist": "BLUE",
+            "label": "PARLOPHONE",
+            "peakpos": "8",
+            "woc": "16",
+            "qandq": [
+                {
+                    "category": "hstest2",
+                    "source": "title",
+                    "answer": "blue",
+                    "difficulty": "#undefinedundefined"
+                }
+            ]
+        }
+    },
+    {
+        "clip": {
+            "id": "IakDItZ7f7Q",
+            "peakdate": "20080830",
+            "title": "VIOLET HILL",
+            "artist": "COLDPLAY",
+            "label": "PARLOPHONE",
+            "peakpos": "8",
+            "woc": "16",
+            "qandq": [
+                {
+                    "category": "hstest2",
+                    "source": "title",
+                    "answer": "violet",
+                    "difficulty": "#undefinedundefined"
+                }
+            ]
+        }
+    }
+]

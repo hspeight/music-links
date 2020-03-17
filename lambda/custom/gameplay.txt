@@ -1,0 +1,45 @@
+Free:
+Two questions per day or maybe a group of three questions per day
+
+Premium
+Unlimited questions:
+
+Alexa confirms category being played
+Alexa plays a music clip and user guesses link word
+One point for correct answer
+
+
+Free categories:
+Numbers,Colors,Animals
+
+Premium categories:
+Subscription £3/month
+
+user can elect to use top 40 for more choices
+Don't forget to check back. New questions are being added regularly.
+
+Send a list of categories to the card so you don't need to read them all out
+
+Start new users with difficulty 1 questions
+let user know they must say the answer only. e.g. new york, not new york mining disater.
+
+Use sound effects/incedental sounds to enchance production value
+
+First three questions for a new user should be ones everyone should know. Have several music clips for each one and select one at random.
+
+Accept whole title or artist as a correct answer e.g. 'BROWN SUGAR','JACKSON BROWNE'
+
+Let user choose decade
+====================================================================
+Q. How do you make sure user does not get same clip repeated?
+A. By having more than one clip for each song.
+
+Q. How many clips to launch with
+A. 300 clips over 150 songs
+
+
+IDEAS:
+double points for entries that didn't get in top twenty
+triple points for entries that didn't get in top forty
+quadruple?
+on reprompt say 'do you need more time?'

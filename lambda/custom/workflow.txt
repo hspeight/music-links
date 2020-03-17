@@ -1,0 +1,14 @@
+getCharts4.js (one time)
+Download all charts from https://www.officialcharts.com
+
+matchFinder.js
+e.g.  node test-code/matchFinder 100 "*" states
+Run this against the category required
+
+clipper.js
+e.g. node test-code/clipper 00:00:00 00:00:18 https://youtu.be/VMTLDKbmlEs numbers,tennis
+Run this against the youtube url to download the audio clip in mp3 format.
+The converted file is a syslink from ALL_CLIPS to the categories entered
+TODO:
+aws s3 sync upload s3://hs-music-links --acl public-read
+

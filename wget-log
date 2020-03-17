@@ -1,0 +1,11 @@
+--2020-02-02 15:59:06--  https://music.amazon.co.uk/albums/B001IQJV8W?trackAsin=B001IQJW90
+Resolving music.amazon.co.uk (music.amazon.co.uk)... 54.239.35.88
+Connecting to music.amazon.co.uk (music.amazon.co.uk)|54.239.35.88|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: unspecified [text/html]
+Saving to: ‘B001IQJV8W?trackAsin=B001IQJW90’
+
+B001IQJV8W?trackAsin=B001IQJW90                 [<=>                                                                                      ]       0  --.-KB/s               B001IQJV8W?trackAsin=B001IQJW90                 [ <=>                                                                                     ] 140.47K   656KB/s               B001IQJV8W?trackAsin=B001IQJW90                 [  <=>                                                                                    ] 167.53K   701KB/s    in 0.2s    
+
+2020-02-02 15:59:06 (701 KB/s) - ‘B001IQJV8W?trackAsin=B001IQJW90’ saved [171547]
+

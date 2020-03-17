@@ -1,0 +1,212 @@
+/*
+This runs after chartRollup and will use the title/artist in /rollup/splits/####.csv to get the YTid
+read through the list of csv files and fetch the YTid where it does not exist
+Pass the number of the csv file to restict processing to a single file
+*/
+// e.g. nodejs test-code/getYTid charts 0001
+const args = process.argv.slice(2); // passed args start at element 2 of the process.argv array
+const location = args[0]; // e.g. charts
+const csvFile = args[1]; // e.g. 0001
+
+var os = require("os");
+const csv = require('csvtojson')
+
+//const results = [];
+var fileArray = [];
+
+//var fs = require('fs');
+const fs = require('fs-extra')
+var glob = require('glob');
+const path = require('path');
+
+const splitEasy = require("csv-split-easy");
+const readline = require('readline');
+
+const {
+    execSync
+} = require("child_process");
+
+var numFilesToRead = 0;
+var recordsPerFile = 10000;
+
+const dirpath = path.join(__dirname, '../' + location);
+var directoryPath = '';
+//let cmd = 'cat ' + dirpath + '/7501-* > ' + dirpath + '/rollup/allcharts.temp'; // concat all chart files in the dirctory into a temp file
+//var y = execSync(cmd).toString();
+//cmd = 'egrep -v \\"Type ' + dirpath + '/rollup/allcharts.temp > ' + dirpath + '/rollup/allcharts.csv'; // get rid of the header rows to create the csv.
+//y = execSync(cmd).toString();
+
+// bin veverything in the splits directory
+//fs.emptyDirSync(dirpath + '/rollup/splits');
+
+// We now have a file with a row for each title/artist with the peak position and weeks on chart in the last two columns
+//const dirpath = path.join(__dirname, '../' + location);
+//console.log(csvFile);
+//return process.exit();
+
+if (csvFile === undefined) {
+    directoryPath = dirpath + '/rollup/splits/*.csv';
+} else {
+    directoryPath = dirpath + '/rollup/splits/' + csvFile + '.csv';
+}
+//console.log(directoryPath);
+glob(directoryPath, function (err, files) {
+    if (err) {
+        console.log(err);
+    }
+    numFilesToRead = files.length;
+    //console.log(numFilesToRead);
+
+    files.forEach(function (file) {
+        try {
+            //console.log(sortedFile);
+            processLineByLine(file);
+        } catch (err) {
+            console.error(err);
+        }
+    });
+
+});
+
+async function processLineByLine(file) {
+    console.log(typeof(file));
+
+    const fileStream = fs.createReadStream(file);
+
+    const rl = readline.createInterface({
+        input: fileStream,
+        crlfDelay: Infinity
+    });
+    // Note: we use the crlfDelay option to recognize all instances of CR LF
+    // ('\r\n') in input.txt as a single line break.
+
+    var dataString = '';
+    let i = 0;
+    let seq = 0;
+    for await (const line of rl) {
+        // Each line in input.txt will be successively available here as `line`.
+        let csvLine = splitEasy(line);
+        //console.log(csvLine[0][0]);
+        if (csvLine[0][0] == 'YTID') {
+
+            let title = csvLine[0][1];
+            let artist = csvLine[0][2];
+            let titleArtist = title + ' ' + artist;
+
+            let YTID = getYTID(titleArtist);
+            console.log(YTID);
+            let newLine = line.replace('YTID', YTID);
+            console.log(line);
+            //return process.exit();
+
+            //let newLine = '"' + YTID + '","' +
+            //   title + '","' +
+            //    artist + '"' +
+            //    os.EOL;
+            dataString += newLine + os.EOL;
+            //i++;
+        }
+    }
+    let myFile = file.concat('.temp');
+    console.log(myFile);
+    fs.writeFileSync(file, dataString); //overwrite the csv file
+
+    //if (!(i % recordsPerFile)) {
+    //    seq++;
+    //let myFile = dirpath + '/rollup/splits/' + seq.toString().padStart(3, '0') + '.csv'; //e.g. 001.csv
+   // fs.writeFileSync(myFile, dataString);
+   // var dataString = '';
+    //i=0;
+
+
+    //fileArray.push(file);
+
+    //if (numFilesToRead === fileArray.length) {
+    //    console.log(' i\'m done');
+    //}
+
+
+
+    //write the remaing records
+    //if (i > 0) {
+    //    seq++;
+    //    let myFile = dirpath + '/rollup/splits/' + seq.toString().padStart(3, '0') + '.csv'; //e.g. 001.csv
+    //    fs.writeFileSync(myFile, dataString);
+   // }
+}
+
+function getYTID(titleArtist) {
+
+    let cmd = 'youtube-dl --ignore-errors --get-id "ytsearch1:' + titleArtist + '" | awk \'{print $1}\'';
+    console.log(cmd);
+    try {
+
+        var res = execSync(cmd).toString().replace(os.EOL, '');
+        //console.log('>' + res.replace(os.EOL, '') + '<');
+        //let bits = res.split(' ');
+        //let y = bits[1].replace(/:/, '');
+        return res;
+
+        //return 'YoUtubeiD-.';
+    } catch {
+        console.log('Error');
+    }
+
+    return res;
+}
+
+async function appendFiles() {
+
+    let jsonOutputFile = path.join(__dirname, '../matches/' + category + '/' + category + '.json');
+    //let csvOutputFile = dirpath + '.csv');
+
+    // ditch the json output file if it exists
+    if (fs.existsSync(csvOutputFile)) {
+        try {
+            fs.unlinkSync(csvOutputFile)
+            //file removed
+        } catch (err) {
+            console.error(err)
+        }
+    }
+
+    fileArray.forEach(async element => {
+
+        let data = fs.readFileSync(element, 'UTF-8');
+
+        try {
+            fs.appendFileSync(csvOutputFile, data + os.EOL);
+            //console.log('The "data to append" was appended to file!');
+        } catch (err) {
+            console.error('Append error');
+            /* Handle the error */
+        }
+
+    });
+
+    cmd = 'sed -i "1i clip.id,clip.peakdate,clip.title,clip.artist,clip.label,clip.peakpos,clip.woc,' +
+        'clip.qandq.0.category,clip.qandq.0.source,clip.qandq.0.answer,clip.qandq.0.difficulty,' +
+        'clip.qandq.1.category,clip.qandq.1.source,clip.qandq.1.answer,clip.qandq.1.difficulty" ' + //only for 2nd cat
+        csvOutputFile;
+    y = execSync(cmd).toString();
+
+    // Async / await usage
+    const jsonArray = await csv().fromFile(csvOutputFile);
+    console.log(JSON.stringify(jsonArray));
+}
+
+function makeqanda(val, matchVal, i) {
+
+    console.log(val);
+    if (val.includes(matchVal)) {
+        console.log(val + ' includes ' + matchVal);
+        return true;
+    } else {
+        return false;
+    }
+
+
+    //let extrabit = artist === matchVal ? '","diff cat' : '';
+
+
+}
