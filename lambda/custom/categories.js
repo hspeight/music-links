@@ -10,8 +10,9 @@ const categories = {
     capital_cities: {
         aka: 'Capital cities',
         premium: true,
-        values: 'london,paris,rome,' +
-            ''
+        values: 'london,paris,rome,Bangkok,washington,' +
+            '',
+        homophone: 'roam:rome,'
     },
     numbers: {
         aka: 'Numbers',
