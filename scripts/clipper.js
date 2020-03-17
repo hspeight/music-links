@@ -51,11 +51,15 @@ processArgs();
 
 async function processArgs() {
     if (argv.hasOwnProperty('ytid')) {
-        ytid = argv.ytid;
+        //ytid = argv.ytid;
         s = '00:00:'.concat(argv.start.toString().padStart(2, '0')); //currently cannot start after 60 secs
-        d = '00:00:'.concat(argv.duration.toString().padStart(2, '0'));
+        console.log(s)
+        //d = '00:00:'.concat(argv.duration.toString().padStart(2, '0'));
         console.log(`ID is ${ytid} start=${s} - duration=${d}`);
-        IDs.push(ytid);
+        //IDs.push(ytid);
+        //IDs = [ytid];
+        validCategories.push('none'); // temp code until work out how to get standalone ytid's intocorrect category
+        categories = ['none']; // need to work out how to get these into the correct category
     }
     if (argv.hasOwnProperty('category')) {
 
@@ -78,11 +82,11 @@ async function processArgs() {
         } else {
             categories = argv.category.split(','); //user could enter something like numbers,colors,animal
         }
-
-        doWork();
-
     }
+    doWork();
+
 }
+
 async function seekConfirmation() {
     const ans = await askQuestion("Are you sure you want to overwrite ALL clips? Answer YES to proceed.");
     if (ans.toLowerCase() != 'yes') {
@@ -101,13 +105,17 @@ function askQuestion(query) {
     }))
 }
 
-
 function doWork() {
 // loop all entered categories
+console.log(categories)
 categories.forEach(el => {
     if (validCategories.includes(el)) {
         console.log(`= = = category ${el} = = =`);
-        IDs = getIDsForCat(el);
+        if (argv.hasOwnProperty('ytid')) {
+            IDs = [argv.ytid];
+        } else {
+            IDs = getIDsForCat(el);
+        }
         //Loop round all ytid's
         IDs.forEach(element => {
             //can we get these from the object?
